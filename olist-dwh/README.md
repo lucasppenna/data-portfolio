@@ -45,5 +45,4 @@ construído em DuckDB, com ingest de 9 CSVs.
 - `products.product_category_name` →  `category_name.product_category_name`
 
 
-## Projects
-- [Analytics Engineering with dbt + DuckDB (Olist dataset)](olist-dwh/README.md)
+
