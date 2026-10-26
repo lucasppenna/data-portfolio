@@ -7,4 +7,4 @@ This repository holds my study projects: SQL/Analytics Engineering (dbt),
 Python for data analysis, and end-to-end cases.
 
 ## Projects
-- (coming soon) Analytics Engineering project with dbt + DuckDB
+- [Analytics Engineering with dbt + DuckDB (Olist dataset)](olist-dwh/README.md)
