@@ -45,4 +45,45 @@ construído em DuckDB, com ingest de 9 CSVs.
 - `products.product_category_name` →  `category_name.product_category_name`
 
 
+## Business Questions Answered
 
+### Q1 — Which states have the slowest average delivery time?
+
+Top 10 states by average delivery time (in days), for delivered orders only,
+excluding states with fewer than 50 delivered orders.
+
+| State | Delivered Orders | Avg Delivery (days) |
+|-------|-----------------:|--------------------:|
+| AP    |               67 |               27.18 |
+| AM    |              145 |               26.36 |
+| AL    |              397 |               24.50 |
+| PA    |              946 |               23.73 |
+| MA    |              717 |               21.51 |
+| SE    |              335 |               21.46 |
+| CE    |            1,279 |               21.20 |
+| AC    |               80 |               21.00 |
+| PB    |              517 |               20.39 |
+| PI    |              476 |               19.39 |
+
+**Finding:** all 10 slowest states are in the North and Northeast regions,
+with Amazonian states (AP, AM) at the top — consistent with long distances
+from the Southeast hubs and complex logistics.
+
+### Q2 — Which states have the highest late-delivery rate?
+
+Percentage of delivered orders that arrived after the estimated delivery date
+(late = delivered strictly after the estimate), states with 50+ orders, top 5.
+
+| State | Delivered Orders | Late Rate (%) |
+|-------|-----------------:|--------------:|
+| AL    |              397 |         23.93 |
+| MA    |              717 |         19.67 |
+| PI    |              476 |         15.97 |
+| CE    |            1,279 |         15.32 |
+| SE    |              335 |         15.22 |
+
+**Finding:** slowest is not the same as latest. AP and AM lead on delivery
+*time* but do not appear in the top 5 on *late rate* — their estimates seem
+calibrated for distance. AL, by contrast, is not among the slowest in days
+but breaks its promise most often (~1 in 4 orders late), suggesting an
+optimistic estimate relative to local operational capacity.
