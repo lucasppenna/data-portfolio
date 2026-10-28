@@ -87,3 +87,8 @@ Percentage of delivered orders that arrived after the estimated delivery date
 calibrated for distance. AL, by contrast, is not among the slowest in days
 but breaks its promise most often (~1 in 4 orders late), suggesting an
 optimistic estimate relative to local operational capacity.
+
+**Data quality note:** verified that `order_payments` can contain multiple
+rows per order (split payments — e.g., card + voucher, or installments).
+`sum(payment_value)` aggregates all payment rows, capturing the total paid
+per order.
