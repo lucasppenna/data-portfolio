@@ -92,3 +92,12 @@ optimistic estimate relative to local operational capacity.
 rows per order (split payments — e.g., card + voucher, or installments).
 `sum(payment_value)` aggregates all payment rows, capturing the total paid
 per order.
+
+**Cohort insight:** monthly retention drops to ~0.5% in month 1 and
+halves again by month 2. Olist is structurally an acquisition-driven,
+one-purchase marketplace — retention is not the growth lever here.
+Recent cohorts show fewer steps due to the dataset cutoff (Oct 2018).
+
+
+**Cross-validation:** new + returning revenue per month reconciles
+with the monthly revenue trend from 02_revenue_analytics.sql.
