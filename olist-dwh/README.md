@@ -101,3 +101,41 @@ Recent cohorts show fewer steps due to the dataset cutoff (Oct 2018).
 
 **Cross-validation:** new + returning revenue per month reconciles
 with the monthly revenue trend from 02_revenue_analytics.sql.
+
+
+
+## Day 5 — Data Quality Audit (`04_data_quality_audit.sql`)
+
+**Goal:** audit referential integrity across the Olist star schema
+before modeling it in dbt. Every check is a hand-written version of
+what `dbt test` will automate in week 2.
+
+### Method
+- **Anti-joins** (`left join ... where right.key is null`) to find
+  orphans in each relationship
+- **Probe before verdict:** orphan counts alone are meaningless —
+  each check was investigated by status/category to classify severity
+  before writing the scorecard
+
+### Findings
+
+| Check | Orphans | Status | Notes |
+|---|---|---|---|
+| orders_without_items | 775 | pass_with_notes | 772 expected (canceled/unavailable/created orders never reached item assignment). **3 true anomalies**: invoiced/shipped orders with no items — likely ingestion failures |
+| products_without_translation | 623 | review | 610 products with NULL category + 13 categories missing an English translation. Coverage gap, not integrity failure |
+| orders_without_customer | 0 | pass | |
+| payments_without_order | 0 | pass | |
+| reviews_without_order | 0 | pass | |
+
+### Verdict
+Referential integrity is solid (4 of 5 relationships fully intact,
+including orders ↔ payments in both directions). Remaining issues are
+coverage gaps, not blocking risks for modeling.
+
+**Cross-check:** the one delivered order with no payment record found
+in the revenue analysis (Day 4) is consistent with this audit — the
+orders ↔ payments relation holds from the payment side.
+
+**Severity principle:** a scorecard that classifies by raw counts
+would flag a healthy relationship as "fail". Severity must come from
+investigation, not from the number alone.
