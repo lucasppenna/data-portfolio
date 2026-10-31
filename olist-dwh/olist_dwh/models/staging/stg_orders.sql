@@ -1,10 +1,10 @@
--- stg_orders: staging da tabela bruta orders
--- Objetivo: limpar a fonte para consumo na camada mart
--- Passos:
---   1. Renomear colunas para snake_case limpo
---   2. Castar datas (purchase, approved, delivered) para TIMESTAMP com TRY_CAST
---   3. Manter order_status como está (validação vem depois no dbt test)
--- Fonte: tabela orders do banco olist.dwh
+-- stg_orders: staging model for the raw orders table
+-- Goal: clean the source for mart-layer consumption
+-- Steps:
+--   1. Explicit select (column contract, not a mirror)
+--   2. Cast dates VARCHAR -> TIMESTAMP via try_cast (confirmed via typeof)
+--   3. Keep order_status as-is (validation comes later via dbt test)
+-- Source: orders table from the olist.dwh database
 
 select
 order_id,
