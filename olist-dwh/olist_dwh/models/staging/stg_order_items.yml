@@ -8,7 +8,21 @@ models:
         description: "Order identifier. NOT unique in this table: one order can have multiple items (composite key with order_item_id)."
         data_tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
       - name: order_item_id
         description: "Sequential item number within the order (starts at 1)."
         data_tests:
           - not_null
+      - name: product_id
+        description: "Product identifier sold in the item."
+      - name: seller_id
+        description: "Seller identifier fulfilling the item."
+      - name: shipping_limit_date
+        description: "Seller deadline for handing the order to the carrier."
+      - name: price
+        description: "Item price in BRL."
+      - name: freight_value
+        description: "Freight value in BRL, charged to the customer; splits across items if the order has more than one."
