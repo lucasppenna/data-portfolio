@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: stg_order_items
+    description: "Staging layer for the raw order_items table: explicit column contract; no casts required (all types confirmed native via typeof: BIGINT, DOUBLE, TIMESTAMP)."
+    columns:
+      - name: order_id
+        description: "Order identifier. NOT unique in this table: one order can have multiple items (composite key with order_item_id)."
+        data_tests:
+          - not_null
+      - name: order_item_id
+        description: "Sequential item number within the order (starts at 1)."
+        data_tests:
+          - not_null
