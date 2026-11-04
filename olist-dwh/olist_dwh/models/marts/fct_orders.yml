@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "One row per order (grain: order_id). Consolidates order status, payment totals, item counts and totals, and data quality flags."
+    columns:
+      - name: order_id
+        description: "Unique order identifier. Primary key of the model."
+        tests:
+          - not_null
+          - unique
+      - name: order_status
+        description: "Order status as recorded in the source."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled', 'unavailable', 'invoiced', 'processing', 'created', 'approved']
+      - name: order_purchase_timestamp
+        description: "Timestamp when the customer placed the order."
+      - name: flag_total_payment
+        description: "Payment classification: no_payment = no record in order_payments; zero_payment = record exists but the summed value is 0 (payment_type not_defined in the source, 3 orders); ok = record exists with a positive value."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['no_payment', 'zero_payment', 'ok']
+      - name: payment_value
+        description: "Total amount paid for the order, summed across payments and rounded to 2 decimals. Zero when there is no payment record."
+        tests:
+          - not_null
+      - name: items_count
+        description: "Number of items in the order. Zero for orders with no item records."
+        tests:
+          - not_null
+      - name: items_price
+        description: "Sum of item prices, rounded to 2 decimals. Zero for orders with no item records."
+        tests:
+          - not_null
+      - name: items_freight
+        description: "Sum of freight values across the order's items, rounded to 2 decimals. Zero for orders with no item records."
+        tests:
+          - not_null
+      - name: flag_missing_items_anomaly
+        description: "True when the order is invoiced or shipped but has no item records in the source. Known data gap: 3 orders on 2016-10-05, with payments recorded. Cause not yet identified."
