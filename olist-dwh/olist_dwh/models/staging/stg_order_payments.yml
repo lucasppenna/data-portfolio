@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: stg_order_payments
+    description: "One row per payment. A single order can have several payments, so order_id alone is not unique. Grain: order_id + payment_sequential."
+    columns:
+      - name: order_id
+        description: "Order the payment belongs to. Part of the composite key."
+        tests:
+          - not_null
+      - name: payment_sequential
+        description: "Sequence of the payment within the order (1, 2, 3...). Part of the composite key."
+        tests:
+          - not_null
+      - name: payment_type
+        description: "Payment method: credit_card, boleto, voucher, debit_card, or not_defined (placeholder record with no payment method set in the source)."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      - name: payment_installments
+        description: "Number of installments the payment was split into. Never null in the source."
+        tests:
+          - not_null
+      - name: payment_value
+        description: "Amount paid in this payment, in BRL. Can be 0 for not_defined records. Never negative."
+        tests:
+          - not_null
