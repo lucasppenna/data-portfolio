@@ -3,23 +3,46 @@
 Data warehouse do dataset Olist (e-commerce brasileiro, 2016-2018, Kaggle)
 construído em DuckDB, com ingest de 9 CSVs.
 
-## Como rodar
+## How to run
 
-1. Crie e ative o ambiente:
+1. Download the Olist Brazilian E-Commerce dataset from Kaggle and place the
+   9 CSV files in `olist-dwh/data/`.
 
-    python -m venv .venv
-    .venv\Scripts\Activate.ps1
+2. Create and activate a virtual environment, then install the dependencies:
 
-2. Instale a dependência:
+       python -m venv .venv
+       .venv\Scripts\Activate.ps1
+       pip install duckdb dbt-duckdb
 
-    pip install duckdb
+3. Build the DuckDB database from the CSVs. Run this from `olist-dwh/`:
 
-3. Execute o setup:
+       python setup_db.py
 
-    python setup_db.py
+   This creates `olist-dwh/olist.dwh`.
+
+4. Configure the dbt profile in `~/.dbt/profiles.yml` (on Windows,
+   `C:\Users\<you>\.dbt\profiles.yml`):
+
+       olist_dwh:
+         outputs:
+           dev:
+             type: duckdb
+             path: ../olist.dwh
+             threads: 4
+         target: dev
+
+   The path is relative to the dbt project folder, `olist-dwh/olist_dwh/`.
+
+5. Build and test the project. Run this from `olist-dwh/olist_dwh/`:
+
+       dbt build
+
+   **Expected result:** one intentional failure, `assert_orders_have_items`,
+   which returns 3 orders in `invoiced` or `shipped` status with no items.
+   It documents a known gap in the source data (see the Data Quality Audit).
 
 
-    ## Dicionário de dados
+## Dicionário de dados
 
 | Tabela | Linhas | Grão |
 |--------|--------|------|
