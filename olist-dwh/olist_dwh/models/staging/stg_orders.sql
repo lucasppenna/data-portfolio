@@ -10,11 +10,11 @@ select
 order_id,
 customer_id,
 order_status,
-TRY_CAST(order_purchase_timestamp as TIMESTAMP) as order_purchase_timestamp,
-TRY_CAST(order_approved_at as TIMESTAMP) as order_approved_at,
-TRY_CAST(order_delivered_carrier_date as TIMESTAMP) as order_delivered_carrier_date,
-TRY_CAST(order_delivered_customer_date as TIMESTAMP) as order_delivered_customer_date,
-TRY_CAST(order_estimated_delivery_date as TIMESTAMP) as order_estimated_delivery_date
+{{ safe_timestamp('order_purchase_timestamp') }} as order_purchase_timestamp,
+{{ safe_timestamp('order_approved_at') }} as order_approved_at,
+{{ safe_timestamp('order_delivered_carrier_date') }} as order_delivered_carrier_date,
+{{ safe_timestamp('order_delivered_customer_date') }} as order_delivered_customer_date,
+{{ safe_timestamp('order_estimated_delivery_date') }} as order_estimated_delivery_date
 
 
 from orders
