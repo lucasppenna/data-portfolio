@@ -7,6 +7,13 @@
 --   3. Composite key: order_id + order_item_id (order_id alone is NOT unique)
 -- Source: order_items table from the olist.dwh database
 
+{{
+    config(
+        materialized='incremental',
+        unique_key=['order_id', 'order_item_id']
+    )
+}}
+
 select
     order_id,
     order_item_id,
@@ -16,3 +23,10 @@ select
     price,
     freight_value
 from order_items
+
+{% if is_incremental() %}
+where shipping_limit_date >= (
+    select max(shipping_limit_date) - interval 7 day
+    from {{ this }}
+)
+{% endif %}
