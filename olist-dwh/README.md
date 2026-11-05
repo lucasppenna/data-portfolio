@@ -139,3 +139,14 @@ orders ↔ payments relation holds from the payment side.
 **Severity principle:** a scorecard that classifies by raw counts
 would flag a healthy relationship as "fail". Severity must come from
 investigation, not from the number alone.
+
+## Ticket evolution (year over year)
+
+This analysis tracks the average value of paid orders by month, compared with the same month of the prior year. The query lives in [olist_dwh/analyses/ticket_evolution_yoy.sql](olist_dwh/analyses/ticket_evolution_yoy.sql).
+
+To avoid distortion from small samples, it only includes months with at least 770 paid orders, both in the month analyzed and in the same month of the prior year. The threshold comes from the standard error of the mean: with a standard deviation of about R$ 222 per order, 770 orders keep the error below 5% of the average ticket.
+
+From January to August 2018, paid order volume grew between 50% and 809% compared with the same months of 2017, decelerating over the period. The average ticket fell between 4% and 11% from January to April 2018, and rose between 1% and 15% from May to August.
+
+The analysis covers only one year of comparison and does not identify the cause of the change in ticket.
+
