@@ -1,4 +1,5 @@
 dbt-core==1.12.6
 dbt-duckdb==1.11.1
+dbt-databricks==1.13.0
 duckdb==2.0.0
 kaggle==2.2.5
