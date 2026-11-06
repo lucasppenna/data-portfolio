@@ -1,7 +1,34 @@
 # Olist Data Warehouse
 
-Data warehouse do dataset Olist (e-commerce brasileiro, 2016-2018, Kaggle)
-construído em DuckDB, com ingest de 9 CSVs.
+A data warehouse built on the Olist Brazilian e-commerce dataset (2016–2018, Kaggle), using dbt and DuckDB, with ingestion of 9 CSV files.
+
+## Overview
+
+This project builds a small analytics warehouse on the Brazilian e-commerce
+dataset from Olist (2016–2018), using dbt and DuckDB.
+
+**Layers**
+- **Staging** (`models/staging/`): one model per source table, with an
+  explicit column list, date casts and documented tests.
+  - `stg_orders`
+  - `stg_order_items`: incremental, with a 7-day lookback on `shipping_limit_date`
+  - `stg_order_payments`
+- **Marts** (`models/marts/`): `fct_orders`, one row per order, with payment
+  and item totals and data quality flags.
+
+**Data quality**
+- A manual scorecard of referential integrity comes first (Data Quality Audit below).
+  Each check was then automated as a dbt test.
+- Column tests (not null, unique, accepted values, relationships) are declared
+  in each model's `.yml` file. The schema files document the column lists and
+  tests; they do not enforce a dbt contract.
+- Composite keys are checked by singular tests: `assert_order_items_unique_key`
+  and `assert_order_payments_unique_key`.
+- Known gap: 3 invoiced or shipped orders have no items. `assert_orders_have_items`
+  reports them with `severity: warn`, so the pipeline shows the gap without failing.
+
+**CI:** every pull request runs `dbt build` in GitHub Actions. The workflow
+downloads the dataset from Kaggle, builds the database and runs the models and tests.
 
 ## How to run
 
@@ -42,22 +69,22 @@ construído em DuckDB, com ingest de 9 CSVs.
    It documents a known gap in the source data (see the Data Quality Audit).
 
 
-## Dicionário de dados
+## Data dictionary
 
-| Tabela | Linhas | Grão |
+| Table | Rows | Grain |
 |--------|--------|------|
-| customers | 99.441 | 1 linha por pedido (customer_id); a pessoa real é o customer_unique_id — 96.096 pessoas, ~3,4% de recorrência |
-| geolocation | 1.000.163 | 1 linha por par CEP-coordenada |
-| order_items | 112.650 | 1 linha por item de pedido |
-| order_payments | 103.886 | 1 linha por pagamento (pedido pode ter mais de 1) |
-| order_reviews | 99.224 | 1 linha por avaliação (nem todo pedido tem) |
-| orders | 99.441 | 1 linha por pedido |
-| products | 32.951 | 1 linha por produto |
-| sellers | 3.095 | 1 linha por vendedor |
-| category_name | 71 | 1 linha por categoria (tradução PT→EN) |
+| customers | 99.441 | 1 row per order (customer_id); the real person is customer_unique_id — 96.096 people, ~3.4% repeat rate |
+| geolocation | 1.000.163 | 1 row per zip code–coordinate pair |
+| order_items | 112.650 | 1 row per order item |
+| order_payments | 103.886 | 1 row per payment (an order can have more than one) |
+| order_reviews | 99.224 | 1 row per review (not every order has one) |
+| orders | 99.441 | 1 row per order |
+| products | 32.951 | 1 row per product |
+| sellers | 3.095 | 1 row per seller |
+| category_name | 71 | 1 row per category (PT→EN translation) |
 
 
-## Relações entre tabelas
+## Table relationships
 
 - `orders.customer_id` → `customers.customer_id`
 - `order_items.order_id` → `orders.order_id`
@@ -172,4 +199,3 @@ To avoid distortion from small samples, it only includes months with at least 77
 From January to August 2018, paid order volume grew between 50% and 809% compared with the same months of 2017, decelerating over the period. The average ticket fell between 4% and 11% from January to April 2018, and rose between 1% and 15% from May to August.
 
 The analysis covers only one year of comparison and does not identify the cause of the change in ticket.
-
