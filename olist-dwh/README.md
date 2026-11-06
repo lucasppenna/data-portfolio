@@ -190,6 +190,24 @@ orders ↔ payments relation holds from the payment side.
 would flag a healthy relationship as "fail". Severity must come from
 investigation, not from the number alone.
 
+### Follow-up: the 3 invoiced or shipped orders without items
+
+The three orders, all placed on 2016-10-05, are invoiced or shipped but have
+no item records. Checks:
+- They have payments (R$ 73.04, R$ 77.73 and R$ 76.19) and customer reviews
+  from November and December 2016.
+- No item record exists under a similar order ID, so the gap is not caused by
+  ID formatting.
+- Other orders on the same days have items, so the gap is not a day-wide
+  ingestion failure.
+
+The dataset holds no item-level prices or products for these orders. The most
+likely cause is that the items were never registered in the source system.
+This cannot be confirmed from the dataset alone.
+
+**Impact:** low. The three orders are 0.003% of orders and R$ 226.96 in
+payments, and they do not change the conclusions of the analyses in this README.
+
 ## Ticket evolution (year over year)
 
 This analysis tracks the average value of paid orders by month, compared with the same month of the prior year. The query lives in [olist_dwh/analyses/ticket_evolution_yoy.sql](olist_dwh/analyses/ticket_evolution_yoy.sql).
