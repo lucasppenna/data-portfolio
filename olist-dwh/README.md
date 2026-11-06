@@ -1,11 +1,9 @@
 # Olist Data Warehouse
 
-A data warehouse built on the Olist Brazilian e-commerce dataset (2016–2018, Kaggle), using dbt and DuckDB, with ingestion of 9 CSV files.
+A data warehouse built with dbt and DuckDB on the Olist Brazilian e-commerce
+dataset (2016–2018, Kaggle).
 
 ## Overview
-
-This project builds a small analytics warehouse on the Brazilian e-commerce
-dataset from Olist (2016–2018), using dbt and DuckDB.
 
 **Layers**
 - **Staging** (`models/staging/`): one model per source table, with an
