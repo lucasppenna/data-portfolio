@@ -17,7 +17,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install "kaggle>=1.8.0" duckdb dbt-duckdb
+        run: pip install -r olist-dwh/requirements.txt
 
       - name: Download Olist dataset
         env:
