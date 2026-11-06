@@ -1,0 +1,47 @@
+name: dbt CI
+
+on:
+  pull_request:
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install "kaggle>=1.8.0" duckdb dbt-duckdb
+
+      - name: Download Olist dataset
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          kaggle datasets download -d olistbr/brazilian-ecommerce -p olist-dwh/data --unzip
+
+      - name: Build DuckDB database
+        working-directory: olist-dwh
+        run: python setup_db.py
+
+      - name: Configure dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml <<'EOF'
+          olist_dwh:
+            outputs:
+              dev:
+                type: duckdb
+                path: ../olist.dwh
+                threads: 4
+            target: dev
+          EOF
+
+      - name: Run dbt build
+        working-directory: olist-dwh/olist_dwh
+        run: dbt build
