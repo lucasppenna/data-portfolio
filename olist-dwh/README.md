@@ -12,7 +12,7 @@ construído em DuckDB, com ingest de 9 CSVs.
 
        python -m venv .venv
        .venv\Scripts\Activate.ps1
-       pip install duckdb dbt-duckdb
+       pip install -r requirements.txt
 
 3. Build the DuckDB database from the CSVs. Run this from `olist-dwh/`:
 
