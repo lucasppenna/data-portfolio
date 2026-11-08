@@ -62,9 +62,48 @@ downloads the dataset from Kaggle, builds the database and runs the models and t
 
        dbt build
 
-   **Expected result:** one intentional failure, `assert_orders_have_items`,
+   **Expected result:** all tests pass except one warning, `assert_orders_have_items`,
    which returns 3 orders in `invoiced` or `shipped` status with no items.
    It documents a known gap in the source data (see the Data Quality Audit).
+
+6. (Optional) Run the same project on Databricks Free Edition. The DuckDB
+   steps above are unchanged; this target only adds a second place to build.
+
+   - In the Databricks workspace, create a schema `olist` in the `workspace`
+     catalog and a volume `raw_csv` inside it. Upload the 9 CSV files to the volume.
+   - Load each CSV into a table of the same name in `workspace.olist`, with
+     `read_files` and `inferSchema`. `order_reviews` needs two extra options,
+     because its comments contain line breaks and double quotes:
+
+         CREATE OR REPLACE TABLE workspace.olist.order_reviews AS
+         SELECT * FROM read_files('/Volumes/workspace/olist/raw_csv/olist_order_reviews_dataset.csv',
+                                  format => 'csv', header => true, inferSchema => true,
+                                  multiLine => true, escape => '"');
+
+     Without them the table has 104.162 rows instead of 99.224.
+   - Add a `databricks` output to `~/.dbt/profiles.yml`. Do not write the token in
+     the file: read it from an environment variable.
+
+         olist_dwh:
+           outputs:
+             dev:
+               type: duckdb
+               path: ../olist.dwh
+               threads: 4
+             databricks:
+               type: databricks
+               catalog: workspace
+               schema: olist
+               host: <your-workspace-host>
+               http_path: /sql/1.0/warehouses/<your-warehouse-id>
+               token: "{{ env_var('DATABRICKS_TOKEN') }}"
+               threads: 4
+           target: dev
+
+   - Set the variable once in PowerShell with
+     `setx DATABRICKS_TOKEN "<your-token>"`, then open a new terminal.
+   - From `olist-dwh/olist_dwh/`, run `dbt build --target databricks`.
+     Expected result: 25 passed and 1 warning (`assert_orders_have_items`).
 
 
 ## Data dictionary
